@@ -16,5 +16,9 @@
     "admin",
     "website"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "ignore": [
+    "/.*",
+    "/*.md"
+  ]
 }
