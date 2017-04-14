@@ -1,5 +1,5 @@
 /*!
- * Handie v0.5.4
+ * Handie v0.5.5
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -526,7 +526,7 @@ utils.generate = {
     var html = actions.map(function (a) {
       if ($.isPlainObject(a)) {
         var btnHtml = [];
-        var btnCls = "btn btn-" + (a.isDelete === true ? "danger" : "default") + " btn-xs js-" + a.action;
+        var btnCls = "btn btn-" + (a.isPrimary === true ? "primary" : a.isDelete === true ? "danger" : "default") + " btn-xs js-" + a.action;
         var isLink = $.type(a.url) === "string";
 
         if (isLink) {
