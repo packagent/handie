@@ -1,5 +1,5 @@
 /*!
- * Handie v0.5.3
+ * Handie v0.5.4
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
