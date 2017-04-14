@@ -1,5 +1,5 @@
 /*!
- * Handie v0.5.2
+ * Handie v0.5.3
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -359,7 +359,7 @@ utils.select = {
 
     $(":selected", $sel).prop("selected", false);
 
-    opts.forEach(function (opt) {
+    [].forEach.call(opts, function (opt) {
       $(opt).prop("selected", true);
     });
 
