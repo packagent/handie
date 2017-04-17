@@ -1,5 +1,5 @@
 /*!
- * Handie v0.5.5
+ * Handie v0.5.6
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -9128,6 +9128,116 @@ ol {
   margin: 0;
   padding: 0;
   list-style: none inside none;
+}
+
+.ImageItem {
+  position: relative;
+  text-align: center;
+  background-color: #a6a6a6;
+}
+
+.ImageItem,
+.ImageItem:not(.ImageItem--add) > div {
+  border-radius: 6px;
+}
+
+.ImageItem:not(.ImageItem--add) > div, .ImageItem.ImageItem--add {
+  position: relative;
+  overflow: hidden;
+}
+
+.ImageItem:not(.ImageItem--add) > div:after, .ImageItem.ImageItem--add:after {
+  content: " ";
+  display: block;
+  position: relative;
+  z-index: -999999999;
+  padding-top: 75%;
+}
+
+.ImageItem:not(.ImageItem--add) > div > *, .ImageItem.ImageItem--add > * {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.ImageItem a:before {
+  content: " ";
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+  width: 0;
+  height: 100%;
+}
+
+.ImageItem a > img {
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+}
+
+.ImageItem img {
+  max-height: 100%;
+}
+
+.ImageItem figcaption {
+  padding: 5px;
+  font-size: 12px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0 0 6px 6px;
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.ImageItem.ImageItem--add {
+  border: 2px dashed #a6a6a6;
+  background-color: transparent;
+}
+
+.ImageItem.ImageItem--add > div:before {
+  content: " ";
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+  width: 0;
+  height: 100%;
+}
+
+.ImageItem.ImageItem--add > div > span {
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+}
+
+.ImageItem.ImageItem--add span span {
+  display: block;
+  font-weight: normal;
+}
+
+.ImageItem.ImageItem--add .fa {
+  font-size: 50px;
+}
+
+button.ImageItem {
+  width: 100%;
+  padding: 0;
 }
 
 html,

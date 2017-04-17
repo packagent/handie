@@ -1,5 +1,5 @@
 /*!
- * Handie v0.5.5
+ * Handie v0.5.6
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -510,7 +510,7 @@ utils.generate = {
       caption = "<figcaption>" + alt + "</figcaption>";
     }
 
-    return "<figure class=\"ImageItem\"><a href=\"" + url + "\" target=\"_blank\"><img src=\"" + url + "\" alt=\"" + alt + "\" title=\"" + alt + "\"></a>" + caption + "</figure>";
+    return "<figure class=\"ImageItem\"><div><a href=\"" + url + "\" target=\"_blank\"><img src=\"" + url + "\" alt=\"" + alt + "\" title=\"" + alt + "\"></a></div>" + caption + "</figure>";
   },
   action: function action(actions, wrapped) {
     if ($.isPlainObject(actions)) {
