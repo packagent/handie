@@ -1,5 +1,5 @@
 /*!
- * Handie v0.5.6
+ * Handie v0.6.0
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -330,6 +330,15 @@ if (SUPPORTS.BS_MODAL) {
   };
 }
 
+defaults.form = {
+  filter: function filter(data, $field, arr) {
+    return true;
+  },
+  serializer: function serializer(arr) {
+    return arr;
+  }
+};
+
 /**
  * 获取下拉列表的默认选项
  *
@@ -413,6 +422,30 @@ utils.form = {
     if ($.isFunction(callback)) {
       callback.call($form.get(0));
     }
+  },
+  serialize: function serialize($form, filter) {
+    var settings = $form;
+    var serializer = void 0;
+
+    if ($.isPlainObject($form)) {
+      $form = settings.$form;
+      filter = settings.filter;
+      serializer = settings.serializer;
+    }
+
+    if (!$.isFunction(filter)) {
+      filter = defaults.form.filter;
+    }
+
+    if (!$.isFunction(serializer)) {
+      serializer = defaults.form.serializer;
+    }
+
+    $form = $($form);
+
+    return serializer($form.serializeArray().filter(function (data, idx, arr) {
+      return filter(data, $("[name=\"" + data.name + "\"]", $form), arr);
+    }));
   }
 };
 
