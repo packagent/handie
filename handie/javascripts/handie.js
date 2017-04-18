@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.0
+ * Handie v0.6.1
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -92,34 +92,6 @@ function resetWaitStatus() {
 }
 
 /**
- * 将表单字段转换为 JSON 对象
- *
- * @param params
- * @param callback
- */
-function jsonifyFormParams(params, callback) {
-  var jsonData = {};
-
-  if ($.isPlainObject(params)) {
-    jsonData = params;
-  } else if (Array.isArray(params)) {
-    params.forEach(function (p) {
-      jsonData[p.name] = p.value;
-    });
-  }
-
-  if ($.isFunction(callback)) {
-    var newJson = callback(jsonData);
-
-    if ($.isPlainObject(newJson)) {
-      jsonData = newJson;
-    }
-  }
-
-  return jsonData;
-}
-
-/**
  * 发起 HTTP 请求
  *
  * @param url
@@ -144,7 +116,7 @@ function httpReq(url, method, params, callback, isJson) {
     }
   };
 
-  params = jsonifyFormParams(params);
+  params = $.isPlainObject(params) ? params : utils.form.jsonify(params);
 
   if (isJson === true) {
     ajaxOpts.data = JSON.stringify(params);
@@ -182,8 +154,7 @@ utils.ajax = {
 
       $("button", $(".modal-header, .modal-footer", $dlg)).prop("disabled", true);
     }
-  },
-  jsonify: jsonifyFormParams
+  }
 };
 
 ["get", "post", "put", "delete"].forEach(function (method) {
@@ -382,6 +353,30 @@ utils.select = {
   }
 };
 
+/**
+ * 将表单字段转换为 JSON 对象
+ *
+ * @param $form
+ * @param callback
+ */
+function jsonifyFormData($form, callback) {
+  var jsonData = {};
+
+  (Array.isArray($form) ? $form : $($form).serializeArray()).forEach(function (p) {
+    jsonData[p.name] = p.value;
+  });
+
+  if ($.isFunction(callback)) {
+    var newJson = callback(jsonData);
+
+    if ($.isPlainObject(newJson)) {
+      jsonData = newJson;
+    }
+  }
+
+  return jsonData;
+}
+
 utils.form = {
   /**
    * 填充表单
@@ -423,6 +418,7 @@ utils.form = {
       callback.call($form.get(0));
     }
   },
+  jsonify: jsonifyFormData,
   serialize: function serialize($form, filter) {
     var settings = $form;
     var serializer = void 0;

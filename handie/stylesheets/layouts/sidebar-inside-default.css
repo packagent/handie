@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.0
+ * Handie v0.6.1
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -9128,6 +9128,49 @@ ol {
   margin: 0;
   padding: 0;
   list-style: none inside none;
+}
+
+
+.modal.is-scrollable .modal-content {
+  height: 100%;
+  padding-top: 58px;
+  padding-bottom: 66px;
+}
+
+.modal.is-scrollable .modal-content,
+.modal.is-scrollable .modal-content .modal-header,
+.modal.is-scrollable .modal-content .modal-footer {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.modal.is-scrollable .modal-content .modal-header,
+.modal.is-scrollable .modal-content .modal-footer {
+  overflow: auto;
+}
+
+.modal.is-scrollable .modal-content .modal-body {
+  height: 100%;
+  overflow: auto;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.modal.is-scrollable .modal-content .modal-header {
+  height: 58px;
+  margin-top: -58px;
+}
+
+.modal.is-scrollable .modal-content .modal-footer {
+  height: 66px;
+  margin-bottom: -66px;
+}
+
+
+.bs-checkbox {
+  vertical-align: middle !important;
 }
 
 .ImageItem {

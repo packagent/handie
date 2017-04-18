@@ -7110,6 +7110,30 @@ ol {
   list-style: none inside none;
 }
 
+/**
+ * Bootstrap
+ */
+
+.modal.is-scrollable .modal-content {
+  height: 100%;
+
+  @include box-fixed-height(
+      ".modal-header", 58px,
+      ".modal-footer", 66px,
+      ".modal-body"
+  );
+}
+
+
+
+/**
+ * Bootstrap Table
+ */
+
+.bs-checkbox {
+  vertical-align: middle !important;
+}
+
 .ImageItem {
   position: relative;
   text-align: center;
