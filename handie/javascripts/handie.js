@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.1
+ * Handie v0.6.2
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -412,7 +412,7 @@ utils.form = {
       utils.select.change($(this));
     });
 
-    $("[type='hidden']").val("");
+    $("[type='hidden']", $form).val("");
 
     if ($.isFunction(callback)) {
       callback.call($form.get(0));
