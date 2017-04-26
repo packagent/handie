@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.3
+ * Handie v0.6.4
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -49,6 +49,7 @@ var utils = {};
 var SUPPORTS = {
   BS_MODAL: $.fn.hasOwnProperty("modal"),
   BS_TABLE: $.fn.hasOwnProperty("bootstrapTable"),
+  BS_DATETIME: $.fn.hasOwnProperty("datetimepicker"),
   SELECT2: $.fn.hasOwnProperty("select2"),
   H5FX: window.hasOwnProperty("H5F"),
   MOMENTJS: window.hasOwnProperty("moment")
@@ -744,6 +745,25 @@ function initDefaults() {
 
       // Bootstrap 数据表格列配置
       $.extend($.fn.bootstrapTable.columnDefaults, { valign: "middle" });
+    }
+  }, {
+    dependency: SUPPORTS.BS_DATETIME,
+    initializer: function initializer() {
+      $.extend(true, $.fn.datetimepicker.defaults, {
+        locale: "zh-CN",
+        icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-chevron-up",
+          down: "fa fa-chevron-down",
+          previous: "fa fa-chevron-left",
+          next: "fa fa-chevron-right",
+          today: "fa fa-crosshairs",
+          clear: "fa fa-trash",
+          close: "fa fa-remove"
+        },
+        showTodayButton: true
+      });
     }
   }, {
     dependency: SUPPORTS.SELECT2,
