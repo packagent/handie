@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.4
+ * Handie v0.6.5
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -544,6 +544,57 @@ utils.field = {
     });
   }
 };
+
+if (SUPPORTS.BS_DATETIME && SUPPORTS.MOMENTJS) {
+  utils.field.datetimepicker = function ($picker, opts) {
+    if ($.isPlainObject($picker)) {
+      opts = $picker;
+      $picker = null;
+    }
+
+    $picker = $picker == null ? $(".js-pickDateTime") : $($picker);
+    opts = $.extend(true, {}, opts);
+
+    $picker.each(function () {
+      var $p = $(this);
+
+      // 时间段
+      if ($p.is(".js-pickDatePeriod")) {
+        (function () {
+          var selector = "input:not([type='hidden'])";
+          var $ipts = $(selector, $p);
+
+          if ($ipts.size() === 2) {
+            $ipts.each(function (idx) {
+              var $ipt = $(this);
+              var method = void 0;
+
+              if (idx === 0) {
+                method = "minDate";
+              } else {
+                method = "maxDate";
+                // 请看 https://github.com/Eonasdan/bootstrap-datetimepicker/issues/1075
+                opts.useCurrent = false;
+              }
+
+              $ipt.datetimepicker(opts).on("dp.change", function (evt) {
+                var $dt = $(this);
+                var date = evt.date;
+
+                $dt.siblings(selector).data("DateTimePicker")[method](date);
+                $("input[name='" + $dt.attr("data-to") + "']", $dt.closest("form")).val(moment(date).format());
+              });
+            });
+          }
+        })();
+      }
+      // 时间点
+      else {
+          $p.datetimepicker(opts);
+        }
+    });
+  };
+}
 
 utils.generate = {
   image: function image(url, alt) {
