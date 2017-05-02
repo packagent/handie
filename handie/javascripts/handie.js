@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.5
+ * Handie v0.6.6
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -46,13 +46,26 @@
 
 var defaults = {};
 var utils = {};
+
 var SUPPORTS = {
-  BS_MODAL: $.fn.hasOwnProperty("modal"),
-  BS_TABLE: $.fn.hasOwnProperty("bootstrapTable"),
-  BS_DATETIME: $.fn.hasOwnProperty("datetimepicker"),
-  SELECT2: $.fn.hasOwnProperty("select2"),
-  H5FX: window.hasOwnProperty("H5F"),
-  MOMENTJS: window.hasOwnProperty("moment")
+  BS_MODAL: function BS_MODAL() {
+    return $.fn.hasOwnProperty("modal");
+  },
+  BS_TABLE: function BS_TABLE() {
+    return $.fn.hasOwnProperty("bootstrapTable");
+  },
+  BS_DATETIME: function BS_DATETIME() {
+    return $.fn.hasOwnProperty("datetimepicker");
+  },
+  SELECT2: function SELECT2() {
+    return $.fn.hasOwnProperty("select2");
+  },
+  H5FX: function H5FX() {
+    return window.hasOwnProperty("H5F");
+  },
+  MOMENTJS: function MOMENTJS() {
+    return window.hasOwnProperty("moment");
+  }
 };
 
 utils.setDefaults = function (settings) {
@@ -268,39 +281,37 @@ utils.calculate = {
 var dialogLevel = 0;
 var DIALOG_DEFAULT_INDEX = 1050;
 
-if (SUPPORTS.BS_MODAL) {
-  utils.dialog = {
-    levelUp: function levelUp($dlg) {
-      var $backdrop = $dlg.data("bs.modal").$backdrop;
-      var increase = dialogLevel * 2 * 10;
+utils.dialog = {
+  levelUp: function levelUp($dlg) {
+    var $backdrop = $dlg.data("bs.modal").$backdrop;
+    var increase = dialogLevel * 2 * 10;
 
-      $dlg.css("z-index", DIALOG_DEFAULT_INDEX + increase);
+    $dlg.css("z-index", DIALOG_DEFAULT_INDEX + increase);
 
-      if ($backdrop) {
-        $backdrop.css("z-index", DIALOG_DEFAULT_INDEX + increase - 10);
-      }
-
-      dialogLevel++;
-    },
-    levelDown: function levelDown($dlg) {
-      var $backdrop = $dlg.data("bs.modal").$backdrop;
-
-      $dlg.css("z-index", DIALOG_DEFAULT_INDEX);
-
-      if ($backdrop) {
-        $backdrop.css("z-index", DIALOG_DEFAULT_INDEX - 10);
-      }
-
-      dialogLevel--;
-    },
-    // 获取最顶级的对话框
-    top: function top() {
-      return [].sort.call($(".modal:visible"), function (a, b) {
-        return $(a).css("z-index") * 1 < $(b).css("z-index") * 1;
-      }).first();
+    if ($backdrop) {
+      $backdrop.css("z-index", DIALOG_DEFAULT_INDEX + increase - 10);
     }
-  };
-}
+
+    dialogLevel++;
+  },
+  levelDown: function levelDown($dlg) {
+    var $backdrop = $dlg.data("bs.modal").$backdrop;
+
+    $dlg.css("z-index", DIALOG_DEFAULT_INDEX);
+
+    if ($backdrop) {
+      $backdrop.css("z-index", DIALOG_DEFAULT_INDEX - 10);
+    }
+
+    dialogLevel--;
+  },
+  // 获取最顶级的对话框
+  top: function top() {
+    return [].sort.call($(".modal:visible"), function (a, b) {
+      return $(a).css("z-index") * 1 < $(b).css("z-index") * 1;
+    }).first();
+  }
+};
 
 defaults.form = {
   filter: function filter(data, $field, arr) {
@@ -394,6 +405,42 @@ function jsonifyFormData($form, callback) {
 }
 
 utils.form = {
+  h5f: function h5f($form) {
+    H5F.init($form, { immediate: false });
+
+    $("[name]", $form).on({
+      "H5F:valid": function H5FValid(e, f) {
+        var $cell = $(e.target).closest("div");
+        var $group = $(".ErrorGroup", $cell);
+
+        $(".Error[data-name='" + f.name + "']", $cell).remove();
+
+        if ($(".Error", $group).size() === 0) {
+          $group.remove();
+        }
+      },
+      "H5F:invalid": function H5FInvalid(e, f) {
+        var $cell = $(e.target).closest("div");
+        var $err = $(".Error[data-name='" + f.name + "']", $cell);
+
+        if ($(".ErrorGroup", $cell).size() === 0) {
+          $cell.append("<div class=\"ErrorGroup\" />");
+        }
+
+        if ($err.size() === 0) {
+          $(".ErrorGroup", $cell).append("<p class=\"Error\" data-name=\"" + f.name + "\" />");
+
+          $err = $(".Error[data-name='" + f.name + "']", $cell);
+        }
+
+        $err.text(f.message);
+      }
+    });
+
+    $form.on("reset", function () {
+      $(".ErrorGroup", $form).remove();
+    });
+  },
   /**
    * 填充表单
    *
@@ -461,45 +508,6 @@ utils.form = {
   }
 };
 
-if (SUPPORTS.H5FX) {
-  utils.form.h5f = function ($form) {
-    H5F.init($form, { immediate: false });
-
-    $("[name]", $form).on({
-      "H5F:valid": function H5FValid(e, f) {
-        var $cell = $(e.target).closest("div");
-        var $group = $(".ErrorGroup", $cell);
-
-        $(".Error[data-name='" + f.name + "']", $cell).remove();
-
-        if ($(".Error", $group).size() === 0) {
-          $group.remove();
-        }
-      },
-      "H5F:invalid": function H5FInvalid(e, f) {
-        var $cell = $(e.target).closest("div");
-        var $err = $(".Error[data-name='" + f.name + "']", $cell);
-
-        if ($(".ErrorGroup", $cell).size() === 0) {
-          $cell.append("<div class=\"ErrorGroup\" />");
-        }
-
-        if ($err.size() === 0) {
-          $(".ErrorGroup", $cell).append("<p class=\"Error\" data-name=\"" + f.name + "\" />");
-
-          $err = $(".Error[data-name='" + f.name + "']", $cell);
-        }
-
-        $err.text(f.message);
-      }
-    });
-
-    $form.on("reset", function () {
-      $(".ErrorGroup", $form).remove();
-    });
-  };
-}
-
 utils.field = {
   fill: function fill($container, data, callback) {
     $("[data-field]", $container).each(function () {
@@ -542,11 +550,8 @@ utils.field = {
         });
       }
     });
-  }
-};
-
-if (SUPPORTS.BS_DATETIME && SUPPORTS.MOMENTJS) {
-  utils.field.datetimepicker = function ($picker, opts) {
+  },
+  datetimepicker: function datetimepicker($picker, opts) {
     if ($.isPlainObject($picker)) {
       opts = $picker;
       $picker = null;
@@ -593,8 +598,8 @@ if (SUPPORTS.BS_DATETIME && SUPPORTS.MOMENTJS) {
           $p.datetimepicker(opts);
         }
     });
-  };
-}
+  }
+};
 
 utils.generate = {
   image: function image(url, alt) {
@@ -652,102 +657,103 @@ utils.generate = {
 defaults.table = {
   selector: "",
   showRowNumber: false,
-  rowActions: []
+  rowActions: [],
+  responseHandler: function responseHandler() {}
 };
 
 function getDataTable() {
   return $(defaults.table.selector);
 }
 
-if (SUPPORTS.BS_TABLE) {
+try {
   defaults.table.responseHandler = $.fn.bootstrapTable.defaults.responseHandler;
+} catch (e) {}
 
-  utils.table = {
-    init: function init(opts) {
-      opts.columns = utils.table.columns(opts.columns, opts.showRowNumber);
+utils.table = {
+  init: function init(opts) {
+    opts.columns = utils.table.columns(opts.columns, opts.showRowNumber);
 
-      getDataTable().bootstrapTable(opts);
-    },
-    columns: function columns(cols, showRowNumber) {
-      var temp = cols.concat([]);
+    getDataTable().bootstrapTable(opts);
+  },
+  columns: function columns(cols, showRowNumber) {
+    var temp = cols.concat([]);
 
-      if ($.type(showRowNumber) !== "boolean") {
-        showRowNumber = defaults.table.showRowNumber;
-      }
+    if ($.type(showRowNumber) !== "boolean") {
+      showRowNumber = defaults.table.showRowNumber;
+    }
 
-      if (showRowNumber === true) {
-        temp.unshift({
-          field: "serialNumber",
-          title: "序号",
-          align: "center",
-          formatter: function formatter(val, row, idx) {
-            return ++idx;
+    if (showRowNumber === true) {
+      temp.unshift({
+        field: "serialNumber",
+        title: "序号",
+        align: "center",
+        formatter: function formatter(val, row, idx) {
+          return ++idx;
+        }
+      });
+    }
+
+    return temp.map(function (col) {
+      var viewDetailOpts = col.viewDetail;
+      var dateTimeFormatter = col.dateTimeFormatter;
+
+      if ($.isPlainObject(viewDetailOpts)) {
+        col.formatter = function (val) {
+          return "<a href=\"javascript:void(0);\" class=\"js-openDetailDialog\">" + (val || "-") + "</a>";
+        };
+
+        col.events = $.extend({}, col.events, {
+          "click .js-openDetailDialog": function clickJsOpenDetailDialog(e, val, row) {
+            $.getJSON(viewDetailOpts.url, viewDetailOpts.params(val, row), function (res) {
+              utils.ajax.result(res, function (result) {
+                var $m = $(".js-viewDetail");
+
+                if ($.isFunction(viewDetailOpts.handler)) {
+                  viewDetailOpts.handler.apply(null, [val, row, result, $m]);
+                } else {
+                  utils.field.fill($m, result);
+                }
+
+                $m.modal("show");
+              });
+            });
           }
         });
+      } else if (dateTimeFormatter) {
+        col.formatter = function (val) {
+          if (dateTimeFormatter === true) {
+            dateTimeFormatter = "YYYY-MM-DD HH:mm:ss";
+          }
+
+          return $.type(dateTimeFormatter) === "string" && moment ? moment(val).format(dateTimeFormatter) : $.isFunction(dateTimeFormatter) ? dateTimeFormatter.call(this, val) : val;
+        };
       }
 
-      return temp.map(function (col) {
-        var viewDetailOpts = col.viewDetail;
-        var dateTimeFormatter = col.dateTimeFormatter;
+      col.titleTooltip = col.title;
 
-        if ($.isPlainObject(viewDetailOpts)) {
-          col.formatter = function (val) {
-            return "<a href=\"javascript:void(0);\" class=\"js-openDetailDialog\">" + (val || "-") + "</a>";
-          };
+      return col;
+    });
+  },
+  /**
+   * @param     $table
+   * @param     resetTop    是否重置到首页
+   */
+  refresh: function refresh() {
+    var $table = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getDataTable();
+    var resetTop = arguments[1];
 
-          col.events = $.extend({}, col.events, {
-            "click .js-openDetailDialog": function clickJsOpenDetailDialog(e, val, row) {
-              $.getJSON(viewDetailOpts.url, viewDetailOpts.params(val, row), function (res) {
-                utils.ajax.result(res, function (result) {
-                  var $m = $(".js-viewDetail");
-
-                  if ($.isFunction(viewDetailOpts.handler)) {
-                    viewDetailOpts.handler.apply(null, [val, row, result, $m]);
-                  } else {
-                    utils.field.fill($m, result);
-                  }
-
-                  $m.modal("show");
-                });
-              });
-            }
-          });
-        } else if (dateTimeFormatter) {
-          col.formatter = function (val) {
-            if (dateTimeFormatter === true) {
-              dateTimeFormatter = "YYYY-MM-DD HH:mm:ss";
-            }
-
-            return $.type(dateTimeFormatter) === "string" && moment ? moment(val).format(dateTimeFormatter) : $.isFunction(dateTimeFormatter) ? dateTimeFormatter.call(this, val) : val;
-          };
-        }
-
-        col.titleTooltip = col.title;
-
-        return col;
-      });
-    },
-    /**
-     * @param     $table
-     * @param     resetTop    是否重置到首页
-     */
-    refresh: function refresh() {
-      var $table = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getDataTable();
-      var resetTop = arguments[1];
-
-      if (typeof $table === "boolean") {
-        resetTop = $table;
-        $table = getDataTable();
-      }
-
-      if (resetTop === true) {
-        $table.data("bootstrap.table").options.pageNumber = 1;
-      }
-
-      $table.bootstrapTable("refresh");
+    if (typeof $table === "boolean") {
+      resetTop = $table;
+      $table = getDataTable();
     }
-  };
-}
+
+    if (resetTop === true) {
+      $table.data("bootstrap.table").options.pageNumber = 1;
+    }
+
+    $table.bootstrapTable("refresh");
+  }
+};
 
 /**
  * 初始化第三方插件的默认参数
@@ -865,14 +871,14 @@ function initDefaults() {
       moment.locale("zh-CN");
     }
   }].forEach(function (lib) {
-    if (lib.dependency) {
+    if (lib.dependency()) {
       lib.initializer();
     }
   });
 }
 
 function initDialogs() {
-  if (!SUPPORTS.BS_MODAL) {
+  if (!SUPPORTS.BS_MODAL()) {
     return;
   }
 
@@ -902,7 +908,7 @@ function initDialogs() {
 }
 
 function initSelects() {
-  if (!SUPPORTS.SELECT2) {
+  if (!SUPPORTS.SELECT2()) {
     return;
   }
 
