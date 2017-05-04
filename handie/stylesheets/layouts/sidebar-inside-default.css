@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.6
+ * Handie v0.6.7
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -9166,6 +9166,10 @@ ol {
 .modal.is-scrollable .modal-content .modal-footer {
   height: 66px;
   margin-bottom: -66px;
+}
+
+.modal.is-waiting .modal-body {
+  overflow: hidden !important;
 }
 
 

@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.6
+ * Handie v0.6.7
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -97,12 +97,14 @@ defaults.ajax = {
  * 重置请求等待状态
  */
 function resetWaitStatus() {
-  var $layer = $(".modal:visible .js-waitForResult:visible");
+  $(".modal:visible .js-waitForResult:visible").each(function () {
+    var $layer = $(this);
+    var $modal = $layer.closest(".modal");
 
-  if ($layer.size()) {
     $layer.hide();
-    $("button", $(".modal-header, .modal-footer", $layer.closest(".modal"))).prop("disabled", false);
-  }
+    $modal.removeClass("is-waiting");
+    $("button", $(".modal-header, .modal-footer", $modal)).prop("disabled", false);
+  });
 }
 
 /**
@@ -160,6 +162,8 @@ utils.ajax = {
     var $dlg = $target.closest(".modal");
 
     if ($dlg.size()) {
+      $dlg.addClass("is-waiting");
+
       if ($(".js-waitForResult", $dlg).size()) {
         $(".js-waitForResult", $dlg).show();
       } else {
@@ -390,7 +394,7 @@ function jsonifyFormData($form, callback) {
   var jsonData = {};
 
   (Array.isArray($form) ? $form : isQueryStr($form) ? queryStr2SerializedArr($form) : $($form).serializeArray()).forEach(function (p) {
-    jsonData[p.name] = p.value;
+    jsonData[p.name] = jsonData.hasOwnProperty(p.name) ? [].concat(jsonData[p.name], p.value) : p.value;
   });
 
   if ($.isFunction(callback)) {
