@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.7
+ * Handie v0.6.8
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -785,19 +785,19 @@ function initDefaults() {
         // showPaginationSwitch: false,
         pageList: [],
         queryParams: function queryParams(params) {
-          params = {};
-
-          $(".Area--query form").serializeArray().concat({
+          return utils.form.jsonify($(".Area--query form").serializeArray().concat({
             name: "pageSize",
             value: this.pageSize
           }, {
             name: "pageNo",
             value: this.pageNumber
-          }).forEach(function (p) {
-            params[p.name] = p.value;
-          });
+          }), function (jsonified) {
+            Object.keys(jsonified).forEach(function (k) {
+              jsonified[k] = jsonified[k].toString();
+            });
 
-          return params;
+            return jsonified;
+          });
         },
         responseHandler: function responseHandler(res) {
           return defaults.table.responseHandler.call(this, res);
