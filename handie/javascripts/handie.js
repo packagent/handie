@@ -1,5 +1,5 @@
 /*!
- * Handie v0.6.8
+ * Handie v0.6.9
  * UI stuffs for the dashboard of a website.
  * https://ourai.github.io/handie/
  *
@@ -612,7 +612,7 @@ utils.generate = {
     alt = alt || "";
 
     if (alt) {
-      caption = "<figcaption>" + alt + "</figcaption>";
+      caption = "<figcaption class=\"u-textTruncate\" title=\"" + alt + "\">" + alt + "</figcaption>";
     }
 
     return "<figure class=\"ImageItem\"><div><a href=\"" + url + "\" target=\"_blank\"><img src=\"" + url + "\" alt=\"" + alt + "\" title=\"" + alt + "\"></a></div>" + caption + "</figure>";
