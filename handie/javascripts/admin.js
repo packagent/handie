@@ -1,5 +1,5 @@
 /*!
- * Handie-jquery v1.0.1
+ * Handie-jquery v1.0.2
  * 为前端开发提供统一的布局、组件和工具方法
  * https://github.com/ourai/handie
  *
@@ -21747,6 +21747,9 @@ function invoke(ref, opts) {
 }
 
 var HTTP_DEFAULTS = {
+
+  baseURL: '',
+
   serverErrorText: '服务器开小差啦～',
 
   jsonify: function jsonify(params) {
@@ -21832,7 +21835,7 @@ function sendRequestViaJquery(opts) {
       method = opts.method,
       callback = opts.callback;
 
-  var resolved = { url: url, method: method, type: method };
+  var resolved = { url: url, method: method, type: method, global: false };
 
   if (opts.isJson === true) {
     resolved.data = JSON.stringify(params);
@@ -21880,6 +21883,10 @@ function sendHttpRequest(opts) {
     callback: null,
     isJson: false
   }, opts);
+
+  if (!/^http(s)?\:\/\//.test(resolved.url)) {
+    resolved.url = getDefaults('http.baseURL') + resolved.url;
+  }
 
   return requestSender === 'jquery' ? sendRequestViaJquery(resolved) : requestSender === 'axios' ? sendRequestViaAxios(resolved) : null;
 }
@@ -25737,6 +25744,9 @@ function invoke(ref, opts) {
 }
 
 var HTTP_DEFAULTS = {
+
+  baseURL: '',
+
   serverErrorText: '服务器开小差啦～',
 
   jsonify: function jsonify(params) {
@@ -25822,7 +25832,7 @@ function sendRequestViaJquery(opts) {
       method = opts.method,
       callback = opts.callback;
 
-  var resolved = { url: url, method: method, type: method };
+  var resolved = { url: url, method: method, type: method, global: false };
 
   if (opts.isJson === true) {
     resolved.data = JSON.stringify(params);
@@ -25870,6 +25880,10 @@ function sendHttpRequest(opts) {
     callback: null,
     isJson: false
   }, opts);
+
+  if (!/^http(s)?\:\/\//.test(resolved.url)) {
+    resolved.url = getDefaults('http.baseURL') + resolved.url;
+  }
 
   return requestSender === 'jquery' ? sendRequestViaJquery(resolved) : requestSender === 'axios' ? sendRequestViaAxios(resolved) : null;
 }
@@ -26766,7 +26780,7 @@ function setDefaults$1(settings) {
 }
 
 window.handie = {
-  setDefaults: setDefaults$1, set: setBizData, get: getBizData, alert: alert,
+  setDefaults: setDefaults$1, set: setBizData, get: getBizData,
   http: http$1, socket: socket,
   generate: generate, text: text, calc: calc,
   data: data, url: url,

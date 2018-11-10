@@ -1,5 +1,5 @@
 /*!
- * Handie-jquery v1.0.1
+ * Handie-jquery v1.0.2
  * 为前端开发提供统一的布局、组件和工具方法
  * https://github.com/ourai/handie
  *
