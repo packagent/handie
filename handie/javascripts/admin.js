@@ -1,5 +1,5 @@
 /*!
- * Handie-jquery v1.0.2
+ * Handie-jquery v1.0.3
  * 为前端开发提供统一的布局、组件和工具方法
  * https://github.com/ourai/handie
  *
@@ -21757,7 +21757,7 @@ var HTTP_DEFAULTS = {
   },
 
   isRestful: function isRestful(res) {
-    return !(res !== undefined && hasOwnProp('success', res) && hasOwnProp('message', res));
+    return !(res !== undefined && hasOwnProp('success', res) && (hasOwnProp('message', res) || hasOwnProp('errorMsg', res)));
   },
 
   errorHandler: function errorHandler(res) {
@@ -21779,8 +21779,8 @@ var HTTP_DEFAULTS = {
         }
       }
 
-      if (isPlainObject(resJson) && hasOwnProp('message', resJson)) {
-        resText = resJson.message;
+      if (isPlainObject(resJson) && (hasOwnProp('message', resJson) || hasOwnProp('errorMsg', resJson))) {
+        resText = hasOwnProp('message', resJson) ? resJson.message : resJson.errorMsg;
       }
 
       invoke('notice.alert', resText);
@@ -21800,7 +21800,7 @@ var HTTP_DEFAULTS = {
 
     else {
         if (!res.success) {
-          invoke('notice.alert', res.message);
+          invoke('notice.alert', hasOwnProp('message', res) ? res.message : res.errorMsg);
         } else if (hasCallback) {
           callback.call(null, res.data);
         }
@@ -25754,7 +25754,7 @@ var HTTP_DEFAULTS = {
   },
 
   isRestful: function isRestful(res) {
-    return !(res !== undefined && hasOwnProp('success', res) && hasOwnProp('message', res));
+    return !(res !== undefined && hasOwnProp('success', res) && (hasOwnProp('message', res) || hasOwnProp('errorMsg', res)));
   },
 
   errorHandler: function errorHandler(res) {
@@ -25776,8 +25776,8 @@ var HTTP_DEFAULTS = {
         }
       }
 
-      if (isPlainObject(resJson) && hasOwnProp('message', resJson)) {
-        resText = resJson.message;
+      if (isPlainObject(resJson) && (hasOwnProp('message', resJson) || hasOwnProp('errorMsg', resJson))) {
+        resText = hasOwnProp('message', resJson) ? resJson.message : resJson.errorMsg;
       }
 
       invoke('notice.alert', resText);
@@ -25797,7 +25797,7 @@ var HTTP_DEFAULTS = {
 
     else {
         if (!res.success) {
-          invoke('notice.alert', res.message);
+          invoke('notice.alert', hasOwnProp('message', res) ? res.message : res.errorMsg);
         } else if (hasCallback) {
           callback.call(null, res.data);
         }
