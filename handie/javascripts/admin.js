@@ -1,5 +1,5 @@
 /*!
- * Handie-jquery v1.0.3
+ * Handie-jquery v1.0.4
  * 为前端开发提供统一的布局、组件和工具方法
  * https://github.com/ourai/handie
  *
@@ -21752,6 +21752,8 @@ var HTTP_DEFAULTS = {
 
   serverErrorText: '服务器开小差啦～',
 
+  ignoreSenderGlobal: true,
+
   jsonify: function jsonify(params) {
     return params;
   },
@@ -21835,7 +21837,7 @@ function sendRequestViaJquery(opts) {
       method = opts.method,
       callback = opts.callback;
 
-  var resolved = { url: url, method: method, type: method, global: false };
+  var resolved = { url: url, method: method, type: method, global: !httpDefaults.ignoreSenderGlobal };
 
   if (opts.isJson === true) {
     resolved.data = JSON.stringify(params);
@@ -25749,6 +25751,8 @@ var HTTP_DEFAULTS = {
 
   serverErrorText: '服务器开小差啦～',
 
+  ignoreSenderGlobal: true,
+
   jsonify: function jsonify(params) {
     return params;
   },
@@ -25832,7 +25836,7 @@ function sendRequestViaJquery(opts) {
       method = opts.method,
       callback = opts.callback;
 
-  var resolved = { url: url, method: method, type: method, global: false };
+  var resolved = { url: url, method: method, type: method, global: !httpDefaults.ignoreSenderGlobal };
 
   if (opts.isJson === true) {
     resolved.data = JSON.stringify(params);
