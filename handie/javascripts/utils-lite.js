@@ -1,5 +1,5 @@
 /*!
- * Handie-jquery v1.0.4
+ * Handie-jquery v1.0.5
  * 为前端开发提供统一的布局、组件和工具方法
  * https://github.com/ourai/handie
  *
@@ -851,103 +851,146 @@ var socket = Object.freeze({
 	init: init
 });
 
-function getMoveDigit(a, b) {
-  var _a = void 0,
-      _b = void 0,
-      la = void 0,
-      lb = void 0;
-
-  a = a.toString(10);
-  b = b.toString(10);
-
-  _a = a.split('.');
-  _b = b.split('.');
-
-  la = _a.length === 2 ? _a[1].length : 0;
-  lb = _b.length === 2 ? _b[1].length : 0;
-
-  return Math.max(la, lb);
+function unwrapExports(x) {
+    return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-function move2Right(num, digit) {
-  var str = void 0,
-      _num = void 0;
-
-  if (digit === 0) {
-    return num;
-  }
-
-  num = num.toString(10);
-  _num = num.split('.');
-  str = _num[1] ? _num[1] : '';
-  _num = _num[0];
-
-  for (var i = 0; i < digit; i++) {
-    _num += str[i] ? str[i] : '0';
-  }
-
-  return _num * 1;
+function createCommonjsModule(fn, module) {
+    return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-function move2Left(num, digit) {
-  if (digit === 0) {
-    return num;
-  }
+var build = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, '__esModule', { value: true });
 
-  var arr = void 0,
-      len = void 0;
+    function strip(num, precision) {
+        if (precision === void 0) {
+            precision = 12;
+        }
+        return +parseFloat(num.toPrecision(precision));
+    }
 
-  num = num.toString();
-  arr = num.split('.');
+    function digitLength(num) {
 
-  if (arr.length === 2) {
-    digit += arr[1].length;
-    num = num.replace('.', '');
-  }
+        var eSplit = num.toString().split(/[eE]/);
+        var len = (eSplit[0].split('.')[1] || '').length - +(eSplit[1] || 0);
+        return len > 0 ? len : 0;
+    }
 
-  arr = num.split('');
-  len = num.length;
+    function float2Fixed(num) {
+        if (num.toString().indexOf('e') === -1) {
+            return Number(num.toString().replace('.', ''));
+        }
+        var dLen = digitLength(num);
+        return dLen > 0 ? strip(num * Math.pow(10, dLen)) : num;
+    }
 
-  for (var i = 0; i < digit - len; i++) {
-    arr.unshift('0');
-  }
+    function checkBoundary(num) {
+        if (_boundaryCheckingState) {
+            if (num > Number.MAX_SAFE_INTEGER || num < Number.MIN_SAFE_INTEGER) {
+                console.warn(num + " is beyond boundary when transfer to integer, the results may not be accurate");
+            }
+        }
+    }
 
-  arr.splice(arr.length - digit, 0, '.');
+    function times(num1, num2) {
+        var others = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            others[_i - 2] = arguments[_i];
+        }
+        if (others.length > 0) {
+            return times.apply(void 0, [times(num1, num2), others[0]].concat(others.slice(1)));
+        }
+        var num1Changed = float2Fixed(num1);
+        var num2Changed = float2Fixed(num2);
+        var baseNum = digitLength(num1) + digitLength(num2);
+        var leftValue = num1Changed * num2Changed;
+        checkBoundary(leftValue);
+        return leftValue / Math.pow(10, baseNum);
+    }
 
-  return arr.join('') * 1;
-}
+    function plus(num1, num2) {
+        var others = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            others[_i - 2] = arguments[_i];
+        }
+        if (others.length > 0) {
+            return plus.apply(void 0, [plus(num1, num2), others[0]].concat(others.slice(1)));
+        }
+        var baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
+        return (times(num1, baseNum) + times(num2, baseNum)) / baseNum;
+    }
 
-function plus(a, b) {
-  var d = getMoveDigit(a, b);
+    function minus(num1, num2) {
+        var others = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            others[_i - 2] = arguments[_i];
+        }
+        if (others.length > 0) {
+            return minus.apply(void 0, [minus(num1, num2), others[0]].concat(others.slice(1)));
+        }
+        var baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
+        return (times(num1, baseNum) - times(num2, baseNum)) / baseNum;
+    }
 
-  return move2Left(move2Right(a, d) + move2Right(b, d), d);
-}
+    function divide(num1, num2) {
+        var others = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            others[_i - 2] = arguments[_i];
+        }
+        if (others.length > 0) {
+            return divide.apply(void 0, [divide(num1, num2), others[0]].concat(others.slice(1)));
+        }
+        var num1Changed = float2Fixed(num1);
+        var num2Changed = float2Fixed(num2);
+        checkBoundary(num1Changed);
+        checkBoundary(num2Changed);
+        return times(num1Changed / num2Changed, Math.pow(10, digitLength(num2) - digitLength(num1)));
+    }
 
-function minus(a, b) {
-  var d = getMoveDigit(a, b);
+    function round(num, ratio) {
+        var base = Math.pow(10, ratio);
+        return divide(Math.round(times(num, base)), base);
+    }
+    var _boundaryCheckingState = true;
 
-  return move2Left(move2Right(a, d) - move2Right(b, d), d);
-}
+    function enableBoundaryChecking(flag) {
+        if (flag === void 0) {
+            flag = true;
+        }
+        _boundaryCheckingState = flag;
+    }
+    var index = { strip: strip, plus: plus, minus: minus, times: times, divide: divide, round: round, digitLength: digitLength, float2Fixed: float2Fixed, enableBoundaryChecking: enableBoundaryChecking };
 
-function multiply(a, b) {
-  var d = getMoveDigit(a, b);
+    exports.strip = strip;
+    exports.plus = plus;
+    exports.minus = minus;
+    exports.times = times;
+    exports.divide = divide;
+    exports.round = round;
+    exports.digitLength = digitLength;
+    exports.float2Fixed = float2Fixed;
+    exports.enableBoundaryChecking = enableBoundaryChecking;
+    exports['default'] = index;
+});
 
-  return move2Left(move2Right(a, d) * move2Right(b, d), d * 2);
-}
-
-function divided(a, b) {
-  var d = getMoveDigit(a, b);
-
-  return move2Right(a, d) / move2Right(b, d);
-}
+unwrapExports(build);
+var build_1 = build.strip;
+var build_2 = build.plus;
+var build_3 = build.minus;
+var build_4 = build.times;
+var build_5 = build.divide;
+var build_6 = build.round;
+var build_7 = build.digitLength;
+var build_8 = build.float2Fixed;
+var build_9 = build.enableBoundaryChecking;
 
 
 
 var calc = Object.freeze({
-	plus: plus,
-	minus: minus,
-	multiply: multiply,
-	divided: divided
+	plus: build_2,
+	minus: build_3,
+	multiply: build_4,
+	divided: build_5
 });
 
 function filterUnchanged(data, raw, excluded) {
